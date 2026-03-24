@@ -2,13 +2,14 @@ import { useFilters } from "../hooks/useFilters";
 
 const statuses = ["todo", "inprogress", "review", "done"];
 const priorities = ["low", "medium", "high", "critical"];
-const assignees = ["AB", "RK", "TS", "MK"];
+const assignees = ["AB", "RK", "TS", "MK"]; // Ab ye use hoga!
 
 export default function FilterBar() {
   const { filters, updateFilter, clearFilters, hasActiveFilters } = useFilters();
 
   const toggleMulti = (key: string, value: string) => {
-    const current = filters[key as keyof typeof filters] as string[];
+    // TypeScript safe access
+    const current = (filters[key as keyof typeof filters] || []) as string[];
     const next = current.includes(value)
       ? current.filter((v) => v !== value)
       : [...current, value];
@@ -62,6 +63,28 @@ export default function FilterBar() {
 
       <div className="h-10 w-[1px] bg-slate-800 self-end hidden md:block" />
 
+      {/* ASSIGNEE GROUP (Added to fix TS6133 and fulfill requirement) */}
+      <div className="flex flex-col gap-2">
+        <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Assignee</span>
+        <div className="flex gap-2">
+          {assignees.map((a) => (
+            <button
+              key={a}
+              onClick={() => toggleMulti("assignee", a)}
+              className={`w-8 h-8 text-[10px] font-bold rounded-full border transition-all flex items-center justify-center ${
+                filters.assignee.includes(a)
+                  ? "bg-emerald-600 border-emerald-500 text-white scale-110 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                  : "bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300"
+              }`}
+            >
+              {a}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="h-10 w-[1px] bg-slate-800 self-end hidden lg:block" />
+
       {/* DATE RANGE */}
       <div className="flex flex-col gap-2">
         <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Timeframe</span>
@@ -82,11 +105,11 @@ export default function FilterBar() {
         </div>
       </div>
 
-      {/* CLEAR BUTTON */}
+      {/* RESET ALL BUTTON */}
       {hasActiveFilters && (
         <button
           onClick={clearFilters}
-          className="ml-auto self-end px-4 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold rounded-lg hover:bg-red-500 hover:text-white transition-all"
+          className="ml-auto self-end px-4 py-1.5 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold rounded-xl hover:bg-red-500 hover:text-white transition-all active:scale-95"
         >
           RESET ALL
         </button>

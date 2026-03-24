@@ -17,7 +17,7 @@ export default function TimeLine() {
     });
   }, [tasks, filters]);
 
-  const { min, max, range, dayWidth } = useMemo(() => {
+  const { min, range, dayWidth } = useMemo(() => {
     if (!filteredTasks.length) return { min: 0, max: 0, range: 1, dayWidth: 100 };
     const timestamps = filteredTasks.map((t) => new Date(t.dueDate).getTime());
     const minDate = Math.min(...timestamps) - 86400000 * 2; // 2 din ka buffer pehle
